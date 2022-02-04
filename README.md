@@ -1,4 +1,4 @@
-# Wave Portal 👋 プロジェクトへようこそ
+# Create your first dApp.
 
 このコースを始めるには、下記のステップを実行してください。
 
