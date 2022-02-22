@@ -1,5 +1,7 @@
 # Create your first dApp.
 
+![](https://i.imgur.com/X844xZs.png)
+
 このコースを始めるには、下記のステップを実行してください。
 
 1. あなたのGithubアカウントにこのレポジトリをフォークしましょう。
