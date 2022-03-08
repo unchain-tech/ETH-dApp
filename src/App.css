@@ -22,6 +22,7 @@
   text-align: center;
   color: gray;
   margin-top: 16px;
+  margin-bottom: 40px;
 }
 
 .waveButton {
@@ -32,3 +33,36 @@
   border-radius: 5px;
   
 }
+
+.wavemeButton {
+  background-color: #EC008c;
+  color: #ffffff;
+  padding: 10px 32px;
+  margin:  12px auto;
+  width: auto;
+  border-radius: 11px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+.vsc-initialized {
+  background-color: #040719;
+}
+
+.messageBox {
+  width: 80%;
+  height: 1em;
+  margin:  0 auto;
+  line-height: 1.2em;
+  padding: 0.5em;
+}
+
+.colorPink{
+  color: #Ec008C;
+}
+
+.textColor {
+  color: #ffffff;
+}
+
+ 
