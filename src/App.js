@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 const App = () => {
-  /* ユーザーのパブリックウォレットを保存するために使用する状態変数を定義します */
+  // ユーザーのパブリックウォレットを保存するために使用する状態変数を定義します。
   const [currentAccount, setCurrentAccount] = useState("");
   console.log("currentAccount: ", currentAccount);
-  /* window.ethereumにアクセスできることを確認します */
+  // window.ethereumにアクセスできることを確認します。
   const checkIfWalletIsConnected = async () => {
     try {
       const { ethereum } = window;
@@ -14,7 +14,7 @@ const App = () => {
       } else {
         console.log("We have the ethereum object", ethereum);
       }
-      /* ユーザーのウォレットへのアクセスが許可されているかどうかを確認します */
+      // ユーザーのウォレットへのアクセスが許可されているかどうかを確認します。
       const accounts = await ethereum.request({ method: "eth_accounts" });
       if (accounts.length !== 0) {
         const account = accounts[0];
@@ -27,7 +27,22 @@ const App = () => {
       console.log(error);
     }
   }
-  /* WEBページがロードされたときに下記の関数を実行します */
+  // connectWalletメソッドを実装
+  const connectWallet = async () => {
+    try {
+      const { ethereum } = window;
+      if (!ethereum) {
+        alert("Get MetaMask!");
+        return;
+      }
+      const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+      console.log("Connected: ", accounts[0]);
+      setCurrentAccount(accounts[0]);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  // WEBページがロードされたときに下記の関数を実行します。
   useEffect(() => {
     checkIfWalletIsConnected();
   }, [])
@@ -43,6 +58,17 @@ const App = () => {
         <button className="waveButton" onClick={null}>
           Wave at Me
         </button>
+        {/* ウォレットコネクトのボタンを実装 */}
+        {!currentAccount && (
+        <button className="waveButton" onClick={connectWallet}>
+            Connect Wallet
+        </button>
+        )}
+        {currentAccount && (
+        <button className="waveButton" onClick={connectWallet}>
+            Wallet Connected
+        </button>
+        )}
       </div>
     </div>
   );
