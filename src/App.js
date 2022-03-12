@@ -9,6 +9,10 @@ const App = () => {
   * ユーザーのパブリックウォレットを保存するために使用する状態変数を定義します。
   */
   const [currentAccount, setCurrentAccount] = useState("");
+  /* ユーザーのメッセージを保存するために使用する状態変数を定義 */
+  const [messageValue, setMessageValue] = useState("")
+  /* すべてのwavesを保存する状態変数を定義 */
+  const [allWaves, setAllWaves] = useState([]);
   console.log("currentAccount: ", currentAccount);
   /**
   * デプロイされたコントラクトのアドレスを保持する変数を作成
@@ -102,6 +106,7 @@ const App = () => {
         const account = accounts[0];
         console.log("Found an authorized account:", account);
         setCurrentAccount(account)
+        getAllWaves();
       } else {
         console.log("No authorized account found")
       }
@@ -144,7 +149,7 @@ const App = () => {
         /*
         * コントラクトに👋（wave）を書き込む。
         */
-        const waveTxn = await wavePortalContract.wave();
+        const waveTxn = await wavePortalContract.wave(messageValue,{gasLimit:300000})
         console.log("Mining...", waveTxn.hash);
         await waveTxn.wait();
         console.log("Mined -- ", waveTxn.hash);
@@ -171,26 +176,44 @@ const App = () => {
         <span role="img" aria-label="hand-wave">👋</span> WELCOME!
         </div>
         <div className="bio">
-          イーサリアムウォレットを接続して、「<span role="img" aria-label="hand-wave">👋</span>(wave)」を送ってください<span role="img" aria-label="shine">✨</span>
+          イーサリアムウォレットを接続して、メッセージを作成したら、<span role="img" aria-label="hand-wave">👋</span>を送ってください<span role="img" aria-label="shine">✨</span>
         </div>
-        {/*
-        * waveボタンにwave関数を連動させる。
-        */}
-        <button className="waveButton" onClick={wave}>
-          Wave at Me
-        </button>
-        {/*
-        * ウォレットコネクトのボタンを実装
-        */}
+        <br />
+        {/* ウォレットコネクトのボタンを実装 */}
         {!currentAccount && (
-        <button className="waveButton" onClick={connectWallet}>
+        <button className="waveButton" onClick={connectWallet} >
             Connect Wallet
         </button>
         )}
         {currentAccount && (
-        <button className="waveButton" onClick={connectWallet}>
+        <button className="waveButton">
             Wallet Connected
         </button>
+        )}
+        {/* waveボタンにwave関数を連動 */}
+        {currentAccount && (
+        <button className="waveButton" onClick={wave}>
+          Wave at Me
+        </button>)
+        }
+        {/* メッセージボックスを実装*/}
+        {currentAccount && (<textarea name="messageArea"
+            placeholder="メッセージはこちら"
+            type="text"
+            id="message"
+            value={messageValue}
+            onChange={e => setMessageValue(e.target.value)} />)
+        }
+        {/* 履歴を表示する */}
+        {currentAccount && (
+        allWaves.slice(0).reverse().map((wave, index) => {
+          return (
+            <div key={index} style={{ backgroundColor: "#F8F8FF", marginTop: "16px", padding: "8px" }}>
+              <div>Address: {wave.address}</div>
+              <div>Time: {wave.timestamp.toString()}</div>
+              <div>Message: {wave.message}</div>
+            </div>)
+        })
         )}
       </div>
     </div>
