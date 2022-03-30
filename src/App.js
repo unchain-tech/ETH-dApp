@@ -170,29 +170,29 @@ const App = () => {
   }, [])
 
   return (
-    <div className="mainContainer">
+    <div className="flex justify-center items-center flex-col min-h-screen text-white font-mono bg-gray-800">
       <div className="dataContainer">
-        <div className="header">
+        <div className="header mt-10">
         <span role="img" aria-label="hand-wave">👋</span> WELCOME!
         </div>
-        <div className="bio">
-          イーサリアムウォレットを接続して、メッセージを作成したら、<span role="img" aria-label="hand-wave">👋</span>を送ってください<span role="img" aria-label="shine">✨</span>
+        <div className="text-white">
+          イーサリアムウォレットを接続して、メッセージを作成したら、<span className="mr-1" role="img" aria-label="hand-wave">👋</span>を送ってください<span role="img" aria-label="shine">✨</span>
         </div>
         <br />
         {/* ウォレットコネクトのボタンを実装 */}
         {!currentAccount && (
-        <button className="waveButton" onClick={connectWallet} >
+        <button className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" onClick={connectWallet} >
             Connect Wallet
         </button>
         )}
         {currentAccount && (
-        <button className="waveButton">
+        <button className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
             Wallet Connected
         </button>
         )}
         {/* waveボタンにwave関数を連動 */}
         {currentAccount && (
-        <button className="waveButton" onClick={wave}>
+        <button className="mt-10 mb-10 group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" onClick={wave}>
           Wave at Me
         </button>)
         }
@@ -208,7 +208,7 @@ const App = () => {
         {currentAccount && (
         allWaves.slice(0).reverse().map((wave, index) => {
           return (
-            <div key={index} style={{ backgroundColor: "#F8F8FF", marginTop: "16px", padding: "8px" }}>
+            <div key={index} style={{ backgroundColor: "#999999", marginTop: "16px", padding: "8px", borderRadius: "0.375rem", marginBottom: "10px"}}>
               <div>Address: {wave.address}</div>
               <div>Time: {wave.timestamp.toString()}</div>
               <div>Message: {wave.message}</div>
