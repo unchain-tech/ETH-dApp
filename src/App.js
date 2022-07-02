@@ -31,6 +31,24 @@ const App = () => {
     }
   };
 
+  // connectWalletメソッドを実装
+  const connectWallet = async () => {
+    try {
+      const { ethereum } = window;
+      if (!ethereum) {
+        alert("Get MetaMask!");
+        return;
+      }
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      console.log("Connected: ", accounts[0]);
+      setCurrentAccount(accounts[0]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   /* WEBページがロードされたときに下記の関数を実行します */
   useEffect(() => {
     checkIfWalletIsConnected();
@@ -58,6 +76,17 @@ const App = () => {
         <button className="waveButton" onClick={null}>
           Wave at Me
         </button>
+        {/* ウォレットコネクトのボタンを実装 */}
+        {!currentAccount && (
+          <button className="waveButton" onClick={connectWallet}>
+            Connect Wallet
+          </button>
+        )}
+        {currentAccount && (
+          <button className="waveButton" onClick={connectWallet}>
+            Wallet Connected
+          </button>
+        )}
       </div>
     </div>
   );
