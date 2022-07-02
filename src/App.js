@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
+import { ethers } from "ethers";
+import abi from "./utils/WavePortal.json";
 
 const App = () => {
 
   /* ユーザーのパブリックウォレットを保存するために使用する状態変数を定義します */
   const [currentAccount, setCurrentAccount] = useState("");
   console.log("currentAccount: ", currentAccount);
+
+  const contractAddress = "0x81f1cA626be3e2B5A52f63D9e39E8e808E517C5D";
+  const contractABI = abi.abi;
 
   /* window.ethereumにアクセスできることを確認します */
   const checkIfWalletIsConnected = async () => {
@@ -49,6 +54,38 @@ const App = () => {
     }
   };
 
+  // waveの回数をカウントする関数を実装
+  const wave = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const wavePortalContract = new ethers.Contract(
+          contractAddress,
+          contractABI,
+          signer
+        );
+        let count = await wavePortalContract.getTotalWaves();
+        console.log("Retrieved total wave count...", count.toNumber());
+        console.log("Signer:", signer);
+        /*
+         * コントラクトに👋（wave）を書き込む。
+         */
+        const waveTxn = await wavePortalContract.wave();
+        console.log("Mining...", waveTxn.hash);
+        await waveTxn.wait();
+        console.log("Mined -- ", waveTxn.hash);
+        count = await wavePortalContract.getTotalWaves();
+        console.log("Retrieved total wave count...", count.toNumber());
+      } else {
+        console.log("Ethereum object doesn't exist!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   /* WEBページがロードされたときに下記の関数を実行します */
   useEffect(() => {
     checkIfWalletIsConnected();
@@ -73,7 +110,7 @@ const App = () => {
             ✨
           </span>
         </div>
-        <button className="waveButton" onClick={null}>
+        <button className="waveButton" onClick={wave}>
           Wave at Me
         </button>
         {/* ウォレットコネクトのボタンを実装 */}
