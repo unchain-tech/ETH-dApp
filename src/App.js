@@ -28,6 +28,7 @@ const App = () => {
       console.log(error);
     }
   };
+  
   // connectWalletメソッドを実装
   const connectWallet = async () => {
     try {
