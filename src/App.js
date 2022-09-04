@@ -12,10 +12,9 @@ const App = () => {
   const [messageValue, setMessageValue] = useState("");
   // すべてのwaveを保存するステート
   const [allWaves, setAllWaves] = useState([]);
-  const contractAddress = "0x842D1097A88CD9481E58CC0e3cb8A2dfDf1cE3FB";
+  const contractAddress = "0x593B618b71B73f40C2d64922edB0eb0019aF8bc7";
   const contractABI = abi.abi;
 
-  // eslint-disable-next-line
   const getAllWaves = async () => {
     const {ethereum} = window;
     try {
@@ -27,6 +26,8 @@ const App = () => {
           contractABI,
           signer
         );
+
+
         // コントラクトからgetAllWavesメソッドを呼び出す
         const waves = await wavePortalContract.getAllWaves();
         const wavesCleaned = waves.map((wave) => {
@@ -136,6 +137,9 @@ const App = () => {
           signer
         );
 
+        let contractBalance = await provider.getBalance(wavePortalContract.address);
+        console.log("Contract balance:", ethers.utils.formatEther(contractBalance));
+
         let count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
         console.log("signer", signer);
@@ -149,6 +153,16 @@ const App = () => {
         count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
         // wave書き込み終了
+
+        // ユーザーがETHを獲得したことを検証
+        let contractBalancePost = await provider.getBalance(wavePortalContract.address);
+        // コントラクトの残高が減っていることを確認
+        if (contractBalancePost.lt(contractBalance)) {
+          console.log("User won ETH!");
+        } else {
+          console.log("User didn't with ETH.");
+        }
+        console.log("Contract balance after wave:", ethers.utils.formatEther(contractBalancePost));
       } else {
         console.log("Ethereum object doesn't exist");
       }
