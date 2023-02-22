@@ -1,14 +1,22 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
+/* ethers 変数を使えるようにする */
 import { ethers } from "ethers";
+/* ABIファイルを含むWavePortal.jsonファイルをインポートする */
 import abi from "./utils/WavePortal.json";
 
 const App = () => {
+  /* ユーザーのパブリックウォレットを保存するために使用する状態変数を定義 */
   const [currentAccount, setCurrentAccount] = useState("");
+  /* ユーザーのメッセージを保存するために使用する状態変数を定義 */
   const [messageValue, setMessageValue] = useState("");
+  /* すべてのwavesを保存する状態変数を定義 */
   const [allWaves, setAllWaves] = useState([]);
   console.log("currentAccount: ", currentAccount);
-  const contractAddress = "0x1F028b6fda403fd4965a8Bb83B4B70AD9C4d1057";
+  /* デプロイされたコントラクトのアドレスを保持する変数を作成 */
+  const contractAddress = "0x395A1065eA907Ab366807d68bbe21Df83169bA6c";
+  /* コントラクトからすべてのwavesを取得するメソッドを作成 */
+  /* ABIの内容を参照する変数を作成 */
   const contractABI = abi.abi;
 
   const getAllWaves = async () => {
@@ -23,8 +31,9 @@ const App = () => {
           contractABI,
           signer
         );
-
+        /* コントラクトからgetAllWavesメソッドを呼び出す */
         const waves = await wavePortalContract.getAllWaves();
+        /* UIに必要なのは、アドレス、タイムスタンプ、メッセージだけなので、以下のように設定 */
         const wavesCleaned = waves.map((wave) => {
           return {
             address: wave.waver,
@@ -32,7 +41,7 @@ const App = () => {
             message: wave.message,
           };
         });
-
+        /* React Stateにデータを格納する */
         setAllWaves(wavesCleaned);
       } else {
         console.log("Ethereum object doesn't exist!");
@@ -42,6 +51,9 @@ const App = () => {
     }
   };
 
+  /**
+   * `emit`されたイベントをフロントエンドに反映させる
+   */
   useEffect(() => {
     let wavePortalContract;
 
@@ -52,23 +64,24 @@ const App = () => {
         {
           address: from,
           timestamp: new Date(timestamp * 1000),
-          message: message,
+          message,
         },
       ]);
     };
 
+    /* NewWaveイベントがコントラクトから発信されたときに、情報をを受け取ります */
     if (window.ethereum) {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
 
-      const wavePortalContract = new ethers.Contract(
+      wavePortalContract = new ethers.Contract(
         contractAddress,
         contractABI,
         signer
       );
       wavePortalContract.on("NewWave", onNewWave);
     }
-
+    /* メモリリークを防ぐために、NewWaveのイベントを解除します */
     return () => {
       if (wavePortalContract) {
         wavePortalContract.off("NewWave", onNewWave);
@@ -76,6 +89,7 @@ const App = () => {
     };
   }, []);
 
+  /* window.ethereumにアクセスできることを確認する関数を実装 */
   const checkIfWalletIsConnected = async () => {
     try {
       const { ethereum } = window;
@@ -85,11 +99,13 @@ const App = () => {
       } else {
         console.log("We have the ethereum object", ethereum);
       }
+      /* ユーザーのウォレットへのアクセスが許可されているかどうかを確認 */
       const accounts = await ethereum.request({ method: "eth_accounts" });
       if (accounts.length !== 0) {
         const account = accounts[0];
-        console.log("Found an authorized account: ", account);
+        console.log("Found an authorized account:", account);
         setCurrentAccount(account);
+        getAllWaves();
       } else {
         console.log("No authorized account found");
       }
@@ -97,7 +113,7 @@ const App = () => {
       console.log(error);
     }
   };
-
+  /* connectWalletメソッドを実装 */
   const connectWallet = async () => {
     try {
       const { ethereum } = window;
@@ -114,13 +130,14 @@ const App = () => {
       console.log(error);
     }
   };
-
+  /* waveの回数をカウントする関数を実装 */
   const wave = async () => {
     try {
       const { ethereum } = window;
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
+        /* ABIを参照 */
         const wavePortalContract = new ethers.Contract(
           contractAddress,
           contractABI,
@@ -129,9 +146,9 @@ const App = () => {
         let count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
 
-        let contractBalance = await provider.getBalance(wavePortalContract.address);
+        const contractBalance = await provider.getBalance(wavePortalContract.address);
         console.log("Contract balance:", ethers.utils.formatEther(contractBalance));
-
+        /* コントラクトに👋（wave）を書き込む */
         const waveTxn = await wavePortalContract.wave(messageValue, {
           gasLimit: 300000,
         });
@@ -140,12 +157,12 @@ const App = () => {
         console.log("Mined -- ", waveTxn.hash);
         count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
-
-        let contractBalance_post = await provider.getBalance(
+        const contractBalance_post = await provider.getBalance(
           wavePortalContract.address
         );
-
+        /* コントラクトの残高が減っていることを確認 */
         if (contractBalance_post.lt(contractBalance)) {
+          /* 減っていたら下記を出力 */
           console.log("User won ETH!");
         } else {
           console.log("User didn't win ETH.");
@@ -158,10 +175,11 @@ const App = () => {
         console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
+  /* WEBページがロードされたときにcheckIfWalletIsConnected()を実行 */
   useEffect(() => {
     checkIfWalletIsConnected();
   }, []);
@@ -186,24 +204,22 @@ const App = () => {
           </span>
         </div>
         <br />
-        { }
+        {/* ウォレットコネクトのボタンを実装 */}
         {!currentAccount && (
           <button className="waveButton" onClick={connectWallet}>
             Connect Wallet
           </button>
         )}
         {currentAccount && (
-          <button className="waveButton" onClick={connectWallet}>
-            Wallet Connected
-          </button>
+          <button className="waveButton">Wallet Connected</button>
         )}
-        { }
+        {/* waveボタンにwave関数を連動 */}
         {currentAccount && (
           <button className="waveButton" onClick={wave}>
             Wave at Me
           </button>
         )}
-        { }
+        {/* メッセージボックスを実装 */}
         {currentAccount && (
           <textarea
             name="messageArea"
@@ -214,6 +230,7 @@ const App = () => {
             onChange={(e) => setMessageValue(e.target.value)}
           />
         )}
+        {/* 履歴を表示する */}
         {currentAccount &&
           allWaves
             .slice(0)
