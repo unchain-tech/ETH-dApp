@@ -71,7 +71,7 @@ contract WavePortal {
     return _waves;
   }
 
-  function get_TotalWaves() public view returns (uint256) {
+  function getTotalWaves() public view returns (uint256) {
     return _totalWaves;
   }
 }

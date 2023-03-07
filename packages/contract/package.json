@@ -4,6 +4,7 @@
   "description": "ETH-dapp",
   "scripts": {
     "test": "npx hardhat run scripts/run.js",
+    "deploy": "npx hardhat run scripts/deploy.js --network goerli",
     "solhint": "solhint --max-error 0 -c ./.solhint.json \"contracts/*.sol\"",
     "solhint:fix": "solhint --fix --max-error 0 -c ./.solhint.json \"contracts/*.sol\"",
     "lint": "eslint --fix",
