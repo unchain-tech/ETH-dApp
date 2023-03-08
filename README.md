@@ -1,4 +1,4 @@
-## 💬 ETH-dApp(protype)
+## 💬 ETH-dApp(prototype)
 
 本レポジトリは ETH-dApp の完成版を示したものになります。
 
