@@ -1,18 +1,14 @@
 require('@nomicfoundation/hardhat-toolbox');
 require('dotenv').config();
 
+const { PRIVATE_KEY, STAGING_ALCHEMY_KEY } = process.env;
+
 module.exports = {
   solidity: '0.8.17',
   networks: {
     goerli: {
-      url:
-        typeof process.env.STAGING_ALCHEMY_KEY === 'undefined'
-          ? ''
-          : process.env.STAGING_ALCHEMY_KEY,
-      accounts:
-        typeof process.env.PRIVATE_KEY === 'undefined'
-          ? ['0'.repeat(64)]
-          : [process.env.PRIVATE_KEY],
+      url: STAGING_ALCHEMY_KEY || '',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : ['0'.repeat(64)],
     },
     // mainnet: {
     //   chainId: 1,
