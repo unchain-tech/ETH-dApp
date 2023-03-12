@@ -1,4 +1,5 @@
 const hre = require('hardhat');
+const { expect } = require('chai');
 const main = async () => {
   const waveContractFactory = await hre.ethers.getContractFactory('WavePortal');
   /*
@@ -11,14 +12,10 @@ const main = async () => {
   console.log('Contract deployed to: ', waveContract.address);
 
   /*
-   * コントラクトの残高を取得（0.1ETH）であることを確認
+   * コントラクトの残高を取得（0.1ETH）
    */
-  let contractBalance = await hre.ethers.provider.getBalance(
-    waveContract.address,
-  );
-  console.log(
-    'Contract balance:',
-    hre.ethers.utils.formatEther(contractBalance),
+  const contractBalanceBefore = hre.ethers.utils.formatEther(
+    await hre.ethers.provider.getBalance(waveContract.address),
   );
 
   /*
@@ -33,17 +30,33 @@ const main = async () => {
   /*
    * コントラクトの残高を取得し、Waveを取得した後の結果を出力
    */
-  contractBalance = await hre.ethers.provider.getBalance(waveContract.address);
-  /*
-   *コントラクトの残高から0.0001ETH引かれていることを確認
-   */
-  console.log(
-    'Contract balance:',
-    hre.ethers.utils.formatEther(contractBalance),
+  const contractBalanceAfter = hre.ethers.utils.formatEther(
+    await hre.ethers.provider.getBalance(waveContract.address),
   );
 
+  /*
+   *勝利した回数に応じてコントラクトから出ていくトークンを計算
+   */
   const allWaves = await waveContract.getAllWaves();
-  console.log(allWaves);
+  let cost = 0;
+  for (let i = 0; i < allWaves.length; i++) {
+    if (allWaves[i].seed <= 50) {
+      cost += 0.0001;
+    }
+  }
+
+  /*
+   *メッセージの送信をテスト
+   */
+  expect(allWaves[0].message).to.equal('This is wave #1');
+  expect(allWaves[1].message).to.equal('This is wave #2');
+
+  /*
+   *コントラクトのトークン残高がwave時の勝負による減少に連動しているかテスト
+   */
+  expect(parseFloat(contractBalanceAfter)).to.equal(
+    contractBalanceBefore - cost,
+  );
 };
 
 const runMain = async () => {

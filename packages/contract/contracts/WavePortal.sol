@@ -14,6 +14,7 @@ contract WavePortal {
     address waver;
     string message;
     uint256 timestamp;
+    uint256 seed;
   }
 
   Wave[] private _waves;
@@ -45,12 +46,12 @@ contract WavePortal {
     _totalWaves += 1;
     console.log('%s has waved!', msg.sender);
 
-    _waves.push(Wave(msg.sender, _message, block.timestamp));
-
     /*
      *  ユーザーのために乱数を設定
      */
     _seed = (block.difficulty + block.timestamp + _seed) % 100;
+
+    _waves.push(Wave(msg.sender, _message, block.timestamp, _seed));
 
     if (_seed <= 50) {
       console.log('%s won!', msg.sender);
