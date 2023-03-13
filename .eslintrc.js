@@ -19,7 +19,12 @@ module.exports = {
     'node/no-unpublished-require': [
       'warn',
       {
-        allowModules: ['@nomicfoundation/hardhat-toolbox', 'hardhat', 'dotenv'],
+        allowModules: [
+          '@nomicfoundation/hardhat-toolbox',
+          'hardhat',
+          'dotenv',
+          'chai',
+        ],
       },
     ],
     'node/no-unpublished-import': ['warn'],
