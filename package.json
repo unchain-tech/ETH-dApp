@@ -2,8 +2,6 @@
   "name": "eth-dapp",
   "version": "1.0.0",
   "description": "Create wave portal",
-  "repository": "https://github.com/unchain-tech/ETH-dApp-prototype.git",
-  "license": "MIT",
   "private": true,
   "workspaces": {
     "packages": [
