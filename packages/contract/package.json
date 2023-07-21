@@ -1,6 +1,8 @@
 {
   "name": "contract",
   "version": "0.1.0",
+  "main": "index.js",
+  "license": "MIT",
   "private": true,
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "1.0.6",
@@ -16,5 +18,12 @@
     "hardhat-gas-reporter": "1.0.9",
     "solidity-coverage": "0.8.2",
     "typechain": "8.1.1"
+  },
+  "scripts": {
+    "run:script": "npx hardhat run scripts/run.js",
+    "test": "npx hardhat test",
+    "deploy": "npx hardhat run scripts/deploy.js --network sepolia",
+    "deploy:localhost": "npx hardhat run scripts/deploy.js --network localhost",
+    "start": "npx hardhat node"
   }
 }
