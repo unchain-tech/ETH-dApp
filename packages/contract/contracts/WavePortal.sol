@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.18;
 
 import 'hardhat/console.sol';
 
@@ -29,7 +29,7 @@ contract WavePortal {
     /*
      * 初期シードの設定
      */
-    _seed = (block.timestamp + block.difficulty) % 100;
+    _seed = (block.timestamp + block.prevrandao) % 100;
   }
 
   function wave(string memory _message) public {
@@ -49,7 +49,7 @@ contract WavePortal {
     /*
      *  ユーザーのために乱数を設定
      */
-    _seed = (block.difficulty + block.timestamp + _seed) % 100;
+    _seed = (block.prevrandao + block.timestamp + _seed) % 100;
 
     _waves.push(Wave(msg.sender, _message, block.timestamp, _seed));
 
