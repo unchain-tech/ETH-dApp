@@ -1,4 +1,8 @@
+# yarn
 **/yarn-error.log*
+.yarn/*
+!.yarn/plugins
+!.yarn/releases
 
 # dependencies
 **/node_modules
