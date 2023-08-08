@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.19;
 
-import 'hardhat/console.sol';
+// import 'hardhat/console.sol';
 
 contract WavePortal {
   uint256 private _totalWaves;
@@ -25,7 +25,7 @@ contract WavePortal {
   mapping(address => uint256) public lastWavedAt;
 
   constructor() payable {
-    console.log('We have been constructed!');
+    // console.log('We have been constructed!');
     /*
      * 初期シードの設定
      */
@@ -36,7 +36,7 @@ contract WavePortal {
     /*
      * 現在ユーザーがwaveを送信している時刻と、前回waveを送信した時刻が15分以上離れていることを確認。
      */
-    require(lastWavedAt[msg.sender] + 0 minutes < block.timestamp, 'Wait 15m');
+    require(lastWavedAt[msg.sender] + 15 minutes < block.timestamp, 'Wait 15m');
 
     /*
      * ユーザーの現在のタイムスタンプを更新する
@@ -44,7 +44,7 @@ contract WavePortal {
     lastWavedAt[msg.sender] = block.timestamp;
 
     _totalWaves += 1;
-    console.log('%s has waved!', msg.sender);
+    // console.log('%s has waved!', msg.sender);
 
     /*
      *  ユーザーのために乱数を設定
@@ -54,7 +54,7 @@ contract WavePortal {
     _waves.push(Wave(msg.sender, _message, block.timestamp, _seed));
 
     if (_seed <= 50) {
-      console.log('%s won!', msg.sender);
+      // console.log('%s won!', msg.sender);
 
       uint256 prizeAmount = 0.0001 ether;
       require(
