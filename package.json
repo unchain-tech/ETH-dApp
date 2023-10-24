@@ -3,13 +3,12 @@
   "version": "1.0.0",
   "description": "Create wave portal",
   "private": true,
-  "workspaces": {
-    "packages": [
-      "packages/*"
-    ]
-  },
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "contract": "yarn workspace contract",
-    "client": "yarn workspace client"
+    "client": "yarn workspace client",
+    "test": "yarn workspace contract test"
   }
 }
