@@ -1,6 +1,6 @@
-import * as React from "react";
-import { ethers } from "ethers";
-import "./App.css";
+import * as React from 'react';
+
+import './App.css';
 
 export default function App() {
   const wave = () => {};
