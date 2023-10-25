@@ -1,3 +1,5 @@
+.yarn/releases
+
 node_modules
 .openzeppelin
 .vscode

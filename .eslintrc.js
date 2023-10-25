@@ -5,11 +5,10 @@ module.exports = {
     mocha: true,
     node: true,
   },
-  plugins: ['@typescript-eslint'],
   extends: ['standard', 'prettier', 'plugin:node/recommended'],
-  parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 12,
+    sourceType: 'module',
   },
   rules: {
     'node/no-unsupported-features/es-syntax': [
