@@ -1,10 +1,4 @@
-# yarn
-.yarn/*
-!.yarn/plugins
-!.yarn/releases
-**/yarn-error.log*
+node_modules/
 
-# dependencies
-**/node_modules
-# misc
-**/.DS_Store
+.DS_Store
+
