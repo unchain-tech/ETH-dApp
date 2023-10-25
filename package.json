@@ -1,15 +1,14 @@
 {
   "name": "ETH-dApp-v2",
   "version": "1.0.0",
+  "packageManager": "yarn@3.6.4",
   "description": "prototype of ETH-dApp",
   "repository": "https://github.com/unchain-tech/ETH-dApp-prototype.git",
   "license": "MIT",
   "private": true,
-  "workspaces": {
-    "packages": [
-      "packages/*"
-    ]
-  },
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
     "eslint": "^8.33.0",
