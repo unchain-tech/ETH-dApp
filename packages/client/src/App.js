@@ -2,21 +2,63 @@ import React, { useEffect, useState } from 'react';
 
 import './App.css';
 
-import { ethers } from "ethers";
-
-import abi from "./utils/WavePortal.json"
+import { getWavePortalContract } from './utils/getWaveContract';
 
 const App = () => {
   // ユーザのパブリックウォレットを保存する状態変数を定義
   const [currentAccount, setCurrentAccount] = useState("");
-  console.log("currentAccount: ", currentAccount);
+  const [messageValue, setMessageValue] = useState("");
+  const [allWaves, setAllWaves] = useState([]);
+  console.log('currentAccount: ', currentAccount);
 
-  const contractAddress = "0x455cF84D54FA0DfCdf8b67E4A83FF86056680fe6";
-  const contractABI = abi.abi;
+  const getAllWaves = async () => {
+    const { ethereum } = window;
+    try {
+      if (!ethereum) {
+        console.log("Ethereum object doesn't exist!");
+        return;
+      }
+      const wavePortalContract = getWavePortalContract(false);
+      const waves = await wavePortalContract.getAllWaves();
+      const wavesCleaned = waves.map(wave => {
+        return {
+          address: wave.waver,
+          timestamp: new Date(wave.timestamp * 1000),
+          message: wave.message,
+        };
+      });
+      setAllWaves(wavesCleaned);
+    } catch (error) {
+      console.error(error)
+    }
+  };
+
+  useEffect(() => {
+    const onNewWave = (from, timestamp, message) => {
+      console.log("NewWave", from, timestamp, message);
+      const newWave = {
+        address: from,
+        timestamp: new Date(timestamp * 1000),
+        message
+      };
+      setAllWaves(prevWaves => [...prevWaves, newWave]);
+    };
+
+    if (!window.ethereum)
+      return;
+
+    const wavePortalContract = getWavePortalContract();
+    wavePortalContract.on("NewWave", onNewWave);
+    return () => {
+      if (wavePortalContract)
+        wavePortalContract.off("NewWave", onNewWave);
+    };
+  
+  },[]);
 
   const checkIfWalletIsConnected = async () => {
+    const { ethereum } = window;
     try {
-      const { ethereum } = window;
       if (!ethereum) {
         console.log("Make sure you have Metamask!");
         return;
@@ -28,6 +70,7 @@ const App = () => {
       if (accounts.length !== 0) {
         console.log("Found an authorized account: ", accounts[0]);
         setCurrentAccount(accounts[0]);
+        getAllWaves();
       } else {
         console.log("No authorized account found")
       }
@@ -60,16 +103,10 @@ const App = () => {
         console.log("Ethereum object doesn't exist!");
         return;
       }
-      const provider = new ethers.providers.Web3Provider(ethereum);
-      const signer = provider.getSigner();
-      const wavePortalContract = new ethers.Contract(
-        contractAddress,
-        contractABI,
-        signer
-      );
+      const wavePortalContract = getWavePortalContract(false);
       let count = await wavePortalContract.getTotalWaves();
       console.log("Retrieved total wave count...", count.toNumber());
-      const waveTxn = await wavePortalContract.wave();
+      const waveTxn = await wavePortalContract.wave(messageValue, {gasLimit: 300000});
       console.log("Mining...", waveTxn.hash);
       await waveTxn.wait();
       console.log("Mined --", waveTxn.hash);
@@ -104,9 +141,6 @@ const App = () => {
           </span>
         </div>
 
-        <button className="waveButton" onClick={wave}>
-          Wave at Me
-        </button>
         {/* Wallet Connect Button */}
         {currentAccount?
           (<button className="waveButton" onClick={connectWallet}>
@@ -115,6 +149,40 @@ const App = () => {
           (<button className="waveButton" onClick={connectWallet}>
             Connect Wallet
           </button>)}
+        
+        {currentAccount && (<button className="waveButton" onClick={wave}>
+          Wave at Me
+        </button>)}
+        {currentAccount && (
+          <textarea
+            name="messageArea"
+            placeholder="Message here!"
+            type="text"
+            id="message"
+            value={messageValue}
+            onChange={(e) => setMessageValue(e.target.value)}
+          />
+        )}
+        {currentAccount && (
+          allWaves
+            .slice(0)
+            .reverse()
+            .map((wave, index) => {
+              return (
+                <div 
+                  key={index} 
+                  style={{
+                    backgroundColor: "#F8F8FF",
+                    marginTop: "16px",
+                    padding: "8px",
+                  }}>
+                  <div>Address: {wave.address}</div>
+                  <div>Time: {wave.timestamp.toString()}</div>
+                  <div>Message: {wave.message}</div>
+                </div>
+              );
+            })
+        )}
       </div>
     </div>
   );
