@@ -2,6 +2,13 @@
   "name": "contract",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "run:script": "npx hardhat run scripts/run.js",
+    "test": "npx hardhat test",
+    "deploy": "npx hardhat run scripts/deploy.js --network sepolia",
+    "deploy:localhost": "npx hardhat run scripts/deploy.js --network localhost",
+    "start": "npx hardhat node"
+  },  
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "1.0.6",
     "@nomicfoundation/hardhat-network-helpers": "1.0.8",
