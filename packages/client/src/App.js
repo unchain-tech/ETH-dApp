@@ -16,7 +16,7 @@ const App = () => {
   const [allWaves, setAllWaves] = useState([]);
   console.log('currentAccount: ', currentAccount);
   /* デプロイされたコントラクトのアドレスを保持する変数を作成 */
-  const contractAddress = '0x3E4dA558ECAe6Fc507fFA5B4ec381e9F1Faf3770';
+  const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
   /* コントラクトからすべてのwavesを取得するメソッドを作成 */
   /* ABIの内容を参照する変数を作成 */
   const contractABI = abi.abi;
@@ -35,12 +35,13 @@ const App = () => {
         );
         /* コントラクトからgetAllWavesメソッドを呼び出す */
         const waves = await wavePortalContract.getAllWaves();
-        /* UIに必要なのは、アドレス、タイムスタンプ、メッセージだけなので、以下のように設定 */
+
         const wavesCleaned = waves.map((wave) => {
           return {
-            address: wave.waver,
+            waver: wave.waver,
             timestamp: new Date(wave.timestamp * 1000),
             message: wave.message,
+            won: wave.seed <= 50,
           };
         });
         /* React Stateにデータを格納する */
@@ -59,16 +60,9 @@ const App = () => {
   useEffect(() => {
     let wavePortalContract;
 
-    const onNewWave = (from, timestamp, message) => {
+    const onNewWave = async (from, timestamp, message) => {
       console.log('NewWave', from, timestamp, message);
-      setAllWaves((prevState) => [
-        ...prevState,
-        {
-          address: from,
-          timestamp: new Date(timestamp * 1000),
-          message: message,
-        },
-      ]);
+      await getAllWaves();
     };
 
     /* NewWaveイベントがコントラクトから発信されたときに、情報をを受け取ります */
@@ -89,6 +83,7 @@ const App = () => {
         wavePortalContract.off('NewWave', onNewWave);
       }
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* window.ethereumにアクセスできることを確認する関数を実装 */
@@ -149,6 +144,8 @@ const App = () => {
         );
         let count = await wavePortalContract.getTotalWaves();
         console.log('Retrieved total wave count...', count.toNumber());
+        const contractBalance = await provider.getBalance(wavePortalContract.address);
+        console.log('Contract balance:', ethers.utils.formatEther(contractBalance));
         /* コントラクトに👋（wave）を書き込む */
         const waveTxn = await wavePortalContract.wave(messageValue, {
           gasLimit: 300000,
@@ -158,6 +155,20 @@ const App = () => {
         console.log('Mined -- ', waveTxn.hash);
         count = await wavePortalContract.getTotalWaves();
         console.log('Retrieved total wave count...', count.toNumber());
+        const contractBalancePost = await provider.getBalance(
+          wavePortalContract.address
+        );
+        /* コントラクトの残高が減っていることを確認 */
+        if (contractBalancePost.lt(contractBalance)) {
+          /* 減っていたら下記を出力 */
+          console.log('User won ETH!');
+        } else {
+          console.log("User didn't win ETH.");
+        }
+        console.log(
+          'Contract balance after wave:',
+          ethers.utils.formatEther(contractBalancePost)
+        );        
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -169,6 +180,7 @@ const App = () => {
   /* WEBページがロードされたときにcheckIfWalletIsConnected()を実行 */
   useEffect(() => {
     checkIfWalletIsConnected();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -190,6 +202,7 @@ const App = () => {
             ✨
           </span>
         </div>
+        <div className='total'>totalWaves={allWaves.length}</div>
         <br />
         {/* ウォレットコネクトのボタンを実装 */}
         {!currentAccount && (
@@ -232,9 +245,10 @@ const App = () => {
                     padding: "8px",
                   }}
                 >
-                  <div>Address: {wave.address}</div>
+                  <div>Address: <a href={`https://sepolia.etherscan.io/address/${wave.waver}`}>{wave.waver}</a></div>
                   <div>Time: {wave.timestamp.toString()}</div>
                   <div>Message: {wave.message}</div>
+                  {wave.won && <div>won!!!</div>}
                 </div>
               );
             })}
