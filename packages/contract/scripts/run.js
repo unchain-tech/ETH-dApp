@@ -1,37 +1,43 @@
 const main = async () => {
-  const waveContractFactory = await hre.ethers.getContractFactory("WavePortal");
+  const waveContractFactory = await hre.ethers.getContractFactory('WavePortal');
   /*
-   * 0.1ETHをコントラクトに提供してデプロイする
+   * デプロイする際0.1ETHをコントラクトに提供する
    */
   const waveContract = await waveContractFactory.deploy({
-    value: hre.ethers.utils.parseEther("0.1"),
+    value: hre.ethers.utils.parseEther('0.1'),
   });
   await waveContract.deployed();
-  console.log("Contract deployed to:", waveContract.address);
+  console.log('Contract deployed to: ', waveContract.address);
 
   /*
-   * コントラクトの残高を取得し、結果を出力（0.1ETHであることを確認）
+   * コントラクトの残高を取得（0.1ETH）であることを確認
    */
   let contractBalance = await hre.ethers.provider.getBalance(
     waveContract.address
   );
   console.log(
-    "Contract balance:",
+    'Contract balance:',
     hre.ethers.utils.formatEther(contractBalance)
   );
 
   /*
-   * Waveし、トランザクションが完了するまで待機
+   * 2回 waves を送るシミュレーションを行う
    */
-  let waveTxn = await waveContract.wave("A message!");
+  const waveTxn = await waveContract.wave('This is wave #1');
   await waveTxn.wait();
 
+  const waveTxn2 = await waveContract.wave('This is wave #2');
+  await waveTxn2.wait();
+
   /*
-   * Waveした後のコントラクトの残高を取得し、結果を出力（0.0001ETH引かれていることを確認）
+   * コントラクトの残高を取得し、Waveを取得した後の結果を出力
    */
   contractBalance = await hre.ethers.provider.getBalance(waveContract.address);
+  /*
+   *コントラクトの残高から0.0001ETH引かれていることを確認
+   */
   console.log(
-    "Contract balance:",
+    'Contract balance:',
     hre.ethers.utils.formatEther(contractBalance)
   );
 
