@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "run:script": "dotenv -e .env npx hardhat run scripts/run.js",
-    "test": "dotenv -e .env npx hardhat test",
-    "deploy": "dotenv -e .env npx hardhat run scripts/deploy.js --network sepolia",
-    "deploy:localhost": "dotenv -e .env npx hardhat run scripts/deploy.js --network localhost",
-    "start": "dotenv -e .env npx hardhat node"
+    "run:script": "npx hardhat run scripts/run.js",
+    "test": "npx hardhat test",
+    "deploy": "npx hardhat run scripts/deploy.js --network sepolia",
+    "deploy:localhost": "npx hardhat run scripts/deploy.js --network localhost",
+    "start": "npx hardhat node"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "1.0.6",
@@ -19,7 +19,6 @@
     "@typechain/hardhat": "6.1.5",
     "chai": "4.3.7",
     "dotenv": "^16.3.1",
-    "dotenv-cli": "^7.3.0",
     "ethers": "5.4",
     "hardhat": "2.18.1",
     "hardhat-gas-reporter": "1.0.9",
